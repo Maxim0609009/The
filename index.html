@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Shop Level 2</title>
+</head>
+
+<body>
+
+<h1>🛍 Shop Level 2</h1>
+
+<h3>Login</h3>
+<input id="user" placeholder="User">
+<input id="pass" placeholder="Pass" type="password">
+<button onclick="login()">Login</button>
+
+<h2 id="role">Rolle: -</h2>
+
+<h2>Produkte</h2>
+<div id="products"></div>
+
+<div id="admin" style="display:none;">
+  <h3>Admin Panel</h3>
+  <input id="name" placeholder="Name">
+  <input id="price" placeholder="Preis">
+  <input id="img" placeholder="Bild URL">
+  <button onclick="addProduct()">Add</button>
+</div>
+
+<script>
+let role = "guest";
+
+// Produkte fest im Frontend
+let products = [
+  {id:1, name:"Produkt A", price:10, img:"https://via.placeholder.com/100"},
+  {id:2, name:"Produkt B", price:20, img:"https://via.placeholder.com/100"}
+];
+
+function login() {
+  const username = document.getElementById("user").value.trim();
+
+  // Simulierter Login
+  if(username.toLowerCase() === "admin") {
+    role = "admin";
+    document.getElementById("admin").style.display = "block";
+  } else {
+    role = "guest";
+    document.getElementById("admin").style.display = "none";
+  }
+
+  document.getElementById("role").innerText = "Rolle: " + role;
+  loadProducts();
+}
+
+function loadProducts() {
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <img src="${p.img}" width="100"><br>
+      ${p.name} - ${p.price}€<br>
+      ${role === "admin" ? `<button onclick="deleteProduct(${p.id})">❌</button>` : ""}
+      <hr>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function addProduct() {
+  const name = document.getElementById("name").value.trim();
+  const price = parseFloat(document.getElementById("price").value);
+  const img = document.getElementById("img").value.trim();
+
+  if(name && !isNaN(price) && img) {
+    const newId = products.length ? Math.max(...products.map(p=>p.id))+1 : 1;
+    products.push({id:newId, name, price, img});
+    loadProducts();
+
+    // Felder leeren
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("img").value = "";
+  }
+}
+
+function deleteProduct(id) {
+  products = products.filter(p => p.id !== id);
+  loadProducts();
+}
+
+// Seite initial laden
+loadProducts();
+</script>
+
+</body>
+</html>
